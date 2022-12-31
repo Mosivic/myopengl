@@ -108,20 +108,36 @@ int main(void)
 
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    float positions[6] = {-0.5f,-0.5f,0.0f,0.5f,0.5f,-0.5f};
+    //顶点索引
+    float positions[] = {
+       -0.5f,-0.5f, //0
+        0.5f,-0.5f, //1
+        0.5f,0.5f,  //2
+       -0.5f,0.5f   //3
+    };
+
+    //三角形生成索引
+    unsigned int indices[] = {
+        0,1,2,
+        2,3,0
+    };
 
     unsigned int buffer;
     //GL初始化设置,生成并绑定顶点缓冲区,写入顶点缓冲区数据 ,设置顶点属性
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 6*sizeof(float),positions,GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 6*2*sizeof(float),positions,GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
 
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-    
     unsigned int shader = CreateShader(source.VertexSource,source.FragmentSource);
     glUseProgram(shader);
 
@@ -131,8 +147,8 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //GLEW 绘制
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //GLEW 绘制,已绑定ibo,所以这里不需要重复绑定,设置为nullptr
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
   
         //GLFW 绘制
         //glBegin(GL_TRIANGLES);
