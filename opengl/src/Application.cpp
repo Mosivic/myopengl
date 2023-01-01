@@ -7,25 +7,9 @@
 #include "vendor/imgui/imgui.h"
 #include "vendor/imgui/example/imgui_impl_glfw.h"
 #include "vendor/imgui/example/imgui_impl_opengl3.h"
-
-#define LOG(x) std::cout << x << std::endl;
-#define ASSERT(x) if(!(x)) __debugbreak();
-#define GLCall(x) {GLClearError();\
-    x; \
-    ASSERT(GLLogCall(#x,__FILE__,__LINE__));}
-
-static void GLClearError() {
-    while (glGetError() != GL_NO_ERROR){}
-}
-
-static bool GLLogCall(const char* function,const char* file,int line) {
-    while ( GLenum error = glGetError()) {
-        std::cout << "[OpenGL Error](" << error << ")" << function 
-            <<" "<<file<<" "<<line<< std::endl;
-        return false;
-    }
-    return true;
-}
+#include "Renderer.h"
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -151,22 +135,15 @@ int main(void)
     GLCall(glGenVertexArrays(1, &vao));
     GLCall(glBindVertexArray(vao));
 
-
-    unsigned int buffer;
-    //绑定顶点缓冲区
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 4*2*sizeof(float),positions,GL_STATIC_DRAW);
+    VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
 
     //设置顶点属性
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
 
-    //绑定索引缓冲区
-    unsigned int ibo;
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    IndexBuffer indexBuffer(indices, 6);
+  
+
 
     //绑定自定义Shader资源
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
@@ -200,6 +177,12 @@ int main(void)
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
         GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+        GLCall(glUseProgram(shader));
+
+        GLCall(glBindVertexArray(vao));
+        vertexBuffer.Bind();
+        indexBuffer.Bind();
+
         GLCall(glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT, nullptr));
 
         if (r > 1.0f) {
