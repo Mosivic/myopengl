@@ -1,21 +1,18 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
+
 #include "vendor/imgui/imgui.h"
 #include "vendor/imgui/example/imgui_impl_glfw.h"
 #include "vendor/imgui/example/imgui_impl_opengl3.h"
+
 #include "Renderer.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 #include "Shader.h"
-
-
-
+#include "Debug.h"
 
 int main(void)
 {
@@ -60,7 +57,7 @@ int main(void)
         2,3,0
     };
 
-    //缓冲区
+    //顶点数组
     VertexArray vao;
     VertexBufferLayout layout;
 
@@ -70,17 +67,17 @@ int main(void)
     layout.Push<float>(2);
     vao.AddBuffer(vbo, layout);
 
-
-    //绑定自定义Shader资源
+    //着色器
     Shader shader;
     shader.CreateShader("res/shaders/Basic.shader");
     shader.Bind();
     shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
     
+    //渲染器
+    Renderer renderer;
 
     float r = 0.2f;
     float increment = 0.05f;
-
 
     bool show_demo_window = true;
     bool show_another_window = false;
@@ -97,16 +94,9 @@ int main(void)
     while (!glfwWindowShouldClose(window)){
         glfwPollEvents();
 
-        GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
+        renderer.Clear();
         shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-       
-        vbo.Bind();
-        ibo.Bind();
-        vao.Bind();
-        shader.Bind();
-
-        GLCall(glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT, nullptr));
+        renderer.Draw(vao, ibo, shader);
 
         if (r > 1.0f) {
             increment = -0.05f;
