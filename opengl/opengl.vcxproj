@@ -148,6 +148,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\vendor\imgui\example\imgui_impl_glfw.cpp" />
     <ClCompile Include="src\vendor\imgui\example\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\vendor\imgui\example\imgui_impl_glfw.h" />
     <ClInclude Include="src\vendor\imgui\example\imgui_impl_opengl3.h" />
     <ClInclude Include="src\vendor\imgui\imconfig.h" />
