@@ -24,13 +24,21 @@ void Shader::UnBind() const
 void Shader::SetUniform4f(const char* name, float v0, float v1, float v2, float v3)
 {
 	unsigned int location = GetUniformLocation(name);
-	ASSERT(location != -1);
 	GLCall(glUniform4f(location, v0, v1, v2, v3));
 }
 
-unsigned int Shader::GetUniformLocation(const char* name)
+int Shader::GetUniformLocation(const char* name)
 {
-	unsigned int location = glGetUniformLocation(m_RendererID, (const GLchar*)name);
+	if (m_UniformLoactionCache.find(name) != m_UniformLoactionCache.end()) 
+		return m_UniformLoactionCache[name];
+
+	int location = glGetUniformLocation(m_RendererID, (const GLchar*)name);
+	if (location == -1){
+		LOG("Warning: uniform ");
+		LOG(name);
+		LOG("doesn't exist!");
+	}
+
 	return location;
 }
 

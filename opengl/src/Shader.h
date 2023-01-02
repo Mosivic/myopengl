@@ -2,6 +2,7 @@
 
 #include "GL/glew.h"
 #include <string>
+#include <unordered_map>
 
 enum class ShaderType {
 	NONE = -1,
@@ -19,6 +20,7 @@ private:
 	std::string m_FilePath;
 	unsigned int m_RendererID;
 	std::string m_ShaderSource;
+	std::unordered_map<std::string,int> m_UniformLoactionCache;
 public:
 	Shader() : m_RendererID(0) {};
 	~Shader();
@@ -32,7 +34,7 @@ public:
 
 	unsigned int GetRendererID() const { return m_RendererID; }
 private:
-	unsigned int GetUniformLocation(const char* name);
+	int GetUniformLocation(const char* name);
 
 	static unsigned int CompileShader(unsigned int type, std::string& source);
 	static ShaderProgramSource ParseShader(const std::string& filepath);
