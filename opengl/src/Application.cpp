@@ -10,6 +10,8 @@
 #include "Renderer.h"
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 struct ShaderProgramSource {
     std::string VertexSource;
@@ -131,18 +133,14 @@ int main(void)
         2,3,0
     };
 
-    unsigned int vao;
-    GLCall(glGenVertexArrays(1, &vao));
-    GLCall(glBindVertexArray(vao));
+    VertexArray vao;
+    VertexBufferLayout layout;
 
-    VertexBuffer vertexBuffer(positions, 4 * 2 * sizeof(float));
-
-    //设置顶点属性
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
-
-    IndexBuffer indexBuffer(indices, 6);
+    VertexBuffer vbo(positions, 4 * 2 * sizeof(float));
+    IndexBuffer ibo(indices, 6);
   
+    layout.Push<float>(2);
+    vao.AddBuffer(vbo, layout);
 
 
     //绑定自定义Shader资源
@@ -179,9 +177,10 @@ int main(void)
         GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
         GLCall(glUseProgram(shader));
 
-        GLCall(glBindVertexArray(vao));
-        vertexBuffer.Bind();
-        indexBuffer.Bind();
+       
+        vbo.Bind();
+        ibo.Bind();
+        vao.Bind();
 
         GLCall(glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_INT, nullptr));
 
