@@ -30,6 +30,7 @@ public:
 	void CreateShader(const std::string& filepath);
 
 	//Set uniforms
+	void SetUniform1i(const char* name, int value);
 	void SetUniform4f(const char* name, float v0, float v1, float v2, float v3);
 
 	unsigned int GetRendererID() const { return m_RendererID; }

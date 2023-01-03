@@ -13,6 +13,7 @@
 #include "VertexBufferLayout.h"
 #include "Shader.h"
 #include "Debug.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -45,10 +46,10 @@ int main(void)
 
     //顶点索引
     float positions[] = {
-       -0.5f,-0.5f, //0
-        0.5f,-0.5f, //1
-        0.5f,0.5f,  //2
-       -0.5f,0.5f   //3
+       -0.5f,-0.5f,0.0f,0.0f, //0
+        0.5f,-0.5f,1.0f,0.0f, //1
+        0.5f,0.5f,1.0f,1.0f,  //2
+       -0.5f,0.5f,0.0f,1.0f  //3
     };
 
     //三角形生成索引
@@ -57,23 +58,33 @@ int main(void)
         2,3,0
     };
 
-    //顶点数组
+    //Enable Blend
+    GLCall(glEnable(GL_BLEND));
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+    //VertexArray 
     VertexArray vao;
     VertexBufferLayout layout;
 
-    VertexBuffer vbo(positions, 4 * 2 * sizeof(float));
+    VertexBuffer vbo(positions, 4 * 4 * sizeof(float));
     IndexBuffer ibo(indices, 6);
   
     layout.Push<float>(2);
+    layout.Push<float>(2);
     vao.AddBuffer(vbo, layout);
 
-    //着色器
+	//Texture
+	Texture texture("res/textures/ChernoLogo.png");
+	texture.Bind();
+
+    //Shader
     Shader shader;
     shader.CreateShader("res/shaders/Basic.shader");
     shader.Bind();
     shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
-    
-    //渲染器
+    shader.SetUniform1i("u_Texture", 0);
+
+    //Renderer
     Renderer renderer;
 
     float r = 0.2f;
@@ -95,7 +106,7 @@ int main(void)
         glfwPollEvents();
 
         renderer.Clear();
-        shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+        //shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
         renderer.Draw(vao, ibo, shader);
 
         if (r > 1.0f) {
