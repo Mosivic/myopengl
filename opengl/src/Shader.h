@@ -3,6 +3,7 @@
 #include "GL/glew.h"
 #include <string>
 #include <unordered_map>
+#include "glm/glm.hpp"
 
 enum class ShaderType {
 	NONE = -1,
@@ -39,4 +40,6 @@ private:
 
 	static unsigned int CompileShader(unsigned int type, std::string& source);
 	static ShaderProgramSource ParseShader(const std::string& filepath);
+public:
+	void SetUniformMat4f(const char* name, glm::mat4 proj);
 };

@@ -15,6 +15,9 @@
 #include "Debug.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
     GLFWwindow* window;
@@ -58,6 +61,9 @@ int main(void)
         2,3,0
     };
 
+    //
+    glm::mat4 proj = glm::ortho<float>(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+    LOG(proj.length());
     //Enable Blend
     GLCall(glEnable(GL_BLEND));
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -73,7 +79,7 @@ int main(void)
     layout.Push<float>(2);
     vao.AddBuffer(vbo, layout);
 
-	//Texture
+	//Texture 
 	Texture texture("res/textures/ChernoLogo.png");
 	texture.Bind();
 
@@ -83,6 +89,7 @@ int main(void)
     shader.Bind();
     shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
     shader.SetUniform1i("u_Texture", 0);
+    shader.SetUniformMat4f("u_MVP", proj);
 
     //Renderer
     Renderer renderer;
